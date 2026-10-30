@@ -1,0 +1,19 @@
+{
+  "name": "Anchor",
+  "short_name": "Anchor",
+  "description": "A private tracker and journal for weather- and body-sensitive anxiety.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1220",
+  "theme_color": "#0B1220",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
