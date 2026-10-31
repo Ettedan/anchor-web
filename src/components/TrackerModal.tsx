@@ -33,18 +33,14 @@ export function TrackerModal({
   // coffee
   const [cups, setCups] = useState(1);
   const [coffeeTime, setCoffeeTime] = useState(fmtTime(Date.now()));
-  // mood / dizzy
+  // mood
   const [mood, setMood] = useState<number | null>(null);
-  const [dizziness, setDizziness] = useState<number | null>(null);
-  const [gut, setGut] = useState<number | null>(null);
 
   useEffect(() => {
     if (!kind) return;
     // reset per-kind state
     setNote('');
     setMood(null);
-    setDizziness(null);
-    setGut(null);
     setQuality(null);
     setMinutes('20');
     setIntensity('moderate');
@@ -73,7 +69,6 @@ export function TrackerModal({
       case 'sleep': return bedtime !== '' && wake !== '' && quality !== null;
       case 'coffee': return cups > 0;
       case 'mood': return mood !== null;
-      case 'dizzy': return dizziness !== null;
       default: return false;
     }
   };
@@ -97,9 +92,6 @@ export function TrackerModal({
       case 'mood':
         addEntry({ kind, mood: mood ?? undefined, ...base });
         break;
-      case 'dizzy':
-        addEntry({ kind, dizziness: dizziness ?? undefined, gut: gut ?? undefined, ...base });
-        break;
     }
     onClose();
   };
@@ -110,7 +102,6 @@ export function TrackerModal({
     sleep: 'Sleep',
     coffee: 'Coffee',
     mood: 'How do you feel?',
-    dizzy: 'Dizziness & body',
   };
   const subtitle: Record<TrackKind, string> = {
     exercise: 'Movement helps, and a raised heart rate in a safe context is useful practice.',
@@ -118,7 +109,6 @@ export function TrackerModal({
     sleep: 'Log the night before when you wake. Bedtime and wake time are what matter.',
     coffee: `Target under ${data.settings.caffeineTargetMg} mg, last cup before ${data.settings.caffeineCutoff}.`,
     mood: '10 is calm. One number, no judgement.',
-    dizzy: '10 is severe. Gut comfort: 10 is comfortable.',
   };
 
   return (
@@ -216,19 +206,6 @@ export function TrackerModal({
       {kind === 'mood' ? (
         <div>
           <LevelScale value={mood} onChange={setMood} low="rough" high="calm" />
-        </div>
-      ) : null}
-
-      {kind === 'dizzy' ? (
-        <div className="col" style={{ gap: 18 }}>
-          <div>
-            <SectionLabel>Dizziness / vestibular load (0–10)</SectionLabel>
-            <LevelScale value={dizziness} onChange={setDizziness} low="none" high="severe" />
-          </div>
-          <div>
-            <SectionLabel>Gut comfort (0–10)</SectionLabel>
-            <LevelScale value={gut} onChange={setGut} low="uncomfortable" high="comfortable" />
-          </div>
         </div>
       ) : null}
 

@@ -18,8 +18,8 @@ or a place; they are the sum of stacked physiological loads crossing a threshold
 
 So the app does not try to talk you down. It does three things:
 
-1. **Records the conditions** — weather, pressure trend, sleep, caffeine, dizziness, gut — at
-   the moment you log something, so you can find the pattern in your own data.
+1. **Records the conditions** — weather, pressure trend, sleep, caffeine — at the moment you
+   log something, so you can find the pattern in your own data.
 2. **Gives you a notebook** — thoughts, wins, and full episode records, all timestamped.
 3. **Shows trends** — mood, episodes and habits over the last two weeks, without streaks,
    scores, or shaming.
@@ -29,12 +29,11 @@ So the app does not try to talk you down. It does three things:
 | Item | What is recorded |
 |---|---|
 | Mood | 0–10, one number |
-| Body | dizziness 0–10 + gut comfort 0–10 |
 | Exercise | type, minutes, intensity |
 | Meditation | type, minutes |
 | Sleep | bedtime, wake time, computed hours, rested 0–10 |
 | Coffee | cups, mg, time — flagged if after your cutoff |
-| Episodes | free text + anxiety/dizziness/gut + triggers + weather snapshot |
+| Episodes | free text + anxiety level + triggers + weather snapshot |
 | Thoughts / wins | free text, timestamped |
 
 Every entry optionally captures a **weather snapshot**: temperature, surface pressure, humidity,

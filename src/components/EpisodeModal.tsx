@@ -10,8 +10,6 @@ export function EpisodeModal({ visible, onClose }: { visible: boolean; onClose: 
   const { addNote } = useStore();
   const [text, setText] = useState('');
   const [anxiety, setAnxiety] = useState<number | null>(null);
-  const [dizziness, setDizziness] = useState<number | null>(null);
-  const [gut, setGut] = useState<number | null>(null);
   const [triggers, setTriggers] = useState<string[]>([]);
   const [weather, setWeather] = useState<WeatherSnap | null>(null);
   const fetching = useRef(false);
@@ -20,8 +18,6 @@ export function EpisodeModal({ visible, onClose }: { visible: boolean; onClose: 
     if (!visible) return;
     setText('');
     setAnxiety(null);
-    setDizziness(null);
-    setGut(null);
     setTriggers([]);
     setWeather(null);
     if (!fetching.current) {
@@ -42,8 +38,6 @@ export function EpisodeModal({ visible, onClose }: { visible: boolean; onClose: 
       kind: 'episode',
       text: text.trim(),
       anxiety: anxiety ?? undefined,
-      dizziness: dizziness ?? undefined,
-      gut: gut ?? undefined,
       triggers,
       weather: weather ?? undefined,
     });
@@ -70,16 +64,6 @@ export function EpisodeModal({ visible, onClose }: { visible: boolean; onClose: 
         <div>
           <SectionLabel>Anxiety level (0–10)</SectionLabel>
           <LevelScale value={anxiety} onChange={setAnxiety} low="none" high="worst" />
-        </div>
-
-        <div>
-          <SectionLabel>Dizziness (0–10)</SectionLabel>
-          <LevelScale value={dizziness} onChange={setDizziness} low="none" high="severe" />
-        </div>
-
-        <div>
-          <SectionLabel>Gut comfort (0–10)</SectionLabel>
-          <LevelScale value={gut} onChange={setGut} low="uncomfortable" high="comfortable" />
         </div>
 
         <div>

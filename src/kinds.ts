@@ -7,7 +7,6 @@ export const KIND_META: Record<TrackKind, { label: string; icon: IconName; color
   sleep: { label: 'Sleep', icon: 'moon', color: '#A78BFA' },
   coffee: { label: 'Coffee', icon: 'coffee', color: '#F0BC78' },
   mood: { label: 'Mood', icon: 'mood', color: '#5FE3C8' },
-  dizzy: { label: 'Body / dizzy', icon: 'dizzy', color: '#F0938F' },
 };
 
 export const NOTE_META: Record<NoteKind, { label: string; color: string }> = {
@@ -16,6 +15,17 @@ export const NOTE_META: Record<NoteKind, { label: string; color: string }> = {
   win: { label: 'Win', color: '#5FE3C8' },
 };
 
+/** Safe lookup: entries saved before a tracker was removed still render. */
+export function kindMeta(kind: string): { label: string; icon: IconName; color: string } {
+  return (
+    (KIND_META as Record<string, { label: string; icon: IconName; color: string }>)[kind] ?? {
+      label: 'Entry',
+      icon: 'today',
+      color: '#6F7F9A',
+    }
+  );
+}
+
 export function entryTitle(e: import('./types').Entry): string {
   switch (e.kind) {
     case 'exercise': return `${e.exerciseType ?? 'Exercise'} · ${e.minutes ?? 0} min`;
@@ -23,10 +33,8 @@ export function entryTitle(e: import('./types').Entry): string {
     case 'sleep': return `Sleep · ${e.hours ?? '?'}h`;
     case 'coffee': return `Coffee · ${e.cups ?? 0} cups (${e.mg ?? 0} mg)`;
     case 'mood': return `Mood ${e.mood ?? '-'}/10`;
-    case 'dizzy': {
-      const parts = [`Dizzy ${e.dizziness ?? '-'}/10`];
-      if (e.gut !== undefined) parts.push(`gut ${e.gut}/10`);
-      return parts.join(' · ');
-    }
+    default:
+      // a tracker that has since been retired; keep the record visible
+      return 'Entry';
   }
 }

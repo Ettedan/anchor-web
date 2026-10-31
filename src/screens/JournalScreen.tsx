@@ -47,7 +47,7 @@ export function JournalScreen({ onOpenEpisode }: { onOpenEpisode: () => void }) 
       >
         <div className="grow">
           <p style={{ fontWeight: 700, fontSize: 16 }}>Record an episode</p>
-          <p className="tiny dim" style={{ marginTop: 2 }}>With anxiety, dizziness, gut, triggers and weather</p>
+          <p className="tiny dim" style={{ marginTop: 2 }}>With anxiety level, triggers and weather</p>
         </div>
         <Icon name="chevron" size={20} color="#F0938F" />
       </button>
@@ -101,8 +101,6 @@ export function JournalScreen({ onOpenEpisode }: { onOpenEpisode: () => void }) 
                     {n.kind === 'episode' ? (
                       <div className="row wrap" style={{ marginTop: 6, gap: 6 }}>
                         {n.anxiety !== undefined ? <Tag label={`anxiety ${n.anxiety}/10`} /> : null}
-                        {n.dizziness !== undefined ? <Tag label={`dizzy ${n.dizziness}/10`} /> : null}
-                        {n.gut !== undefined ? <Tag label={`gut ${n.gut}/10`} /> : null}
                         {n.triggers?.length ? n.triggers!.map((t) => <Tag key={t} label={t} />) : null}
                         {n.weather ? <Tag label={`${n.weather.pressureHpa} hPa · ${n.weather.trendLabel}`} /> : null}
                       </div>

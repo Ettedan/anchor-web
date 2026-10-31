@@ -1,4 +1,4 @@
-export type TrackKind = 'exercise' | 'meditation' | 'sleep' | 'coffee' | 'mood' | 'dizzy';
+export type TrackKind = 'exercise' | 'meditation' | 'sleep' | 'coffee' | 'mood';
 export type NoteKind = 'thought' | 'episode' | 'win';
 
 export type WeatherSnap = {
@@ -35,10 +35,6 @@ export type Entry = {
   coffeeTime?: string;
   // mood — 0-10, 10 = calm
   mood?: number;
-  // dizzy — 0-10, 10 = severe
-  dizziness?: number;
-  // gut comfort — 0-10, 10 = comfortable
-  gut?: number;
 };
 
 export type Note = {
@@ -47,8 +43,6 @@ export type Note = {
   kind: NoteKind;
   text: string;
   anxiety?: number; // 0-10, 10 = worst
-  dizziness?: number; // 0-10
-  gut?: number; // 0-10 comfort
   triggers?: string[];
   weather?: WeatherSnap;
 };

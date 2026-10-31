@@ -3,7 +3,7 @@ import { Icon } from '../components/Icon';
 import type { IconName } from '../components/Icon';
 import { useStore } from '../store';
 import type { TrackKind, WeatherSnap } from '../types';
-import { entryTitle, KIND_META, NOTE_META } from '../kinds';
+import { entryTitle, kindMeta, KIND_META, NOTE_META } from '../kinds';
 import { fmtFull, fmtTime, isToday } from '../util';
 import { getWeatherSnapshot, weatherAdvice } from '../weather';
 
@@ -17,7 +17,6 @@ const greeting = () => {
 
 const TRACKS: { kind: TrackKind; icon: IconName; label: string }[] = [
   { kind: 'mood', icon: 'mood', label: 'Mood' },
-  { kind: 'dizzy', icon: 'dizzy', label: 'Body' },
   { kind: 'exercise', icon: 'run', label: 'Exercise' },
   { kind: 'meditation', icon: 'meditate', label: 'Meditate' },
   { kind: 'sleep', icon: 'moon', label: 'Sleep' },
@@ -123,7 +122,7 @@ export function TodayScreen({
           ))}
           {todayEntries.map((e) => (
             <div key={e.id} className="entry-row">
-              <span className="entry-dot" style={{ background: KIND_META[e.kind].color }} />
+              <span className="entry-dot" style={{ background: kindMeta(e.kind).color }} />
               <div className="grow">
                 <div className="small" style={{ fontWeight: 600 }}>{entryTitle(e)}</div>
                 {e.note ? <div className="tiny faint" style={{ marginTop: 1 }}>{e.note}</div> : null}
