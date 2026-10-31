@@ -3,7 +3,8 @@
 A private, always-available tracker and journal for **weather- and body-sensitive anxiety**.
 
 Built for one person. Works on a phone, installs to the home screen, runs offline, and
-stores everything on the device. No account, no server, no analytics.
+stores everything on the device. No account, no server, no analytics. Optional sync between
+devices through a private GitHub repo you own.
 
 **Live:** https://ettedan.github.io/anchor-web/
 
@@ -50,9 +51,30 @@ Location is requested once and only used to fetch weather.
 
 ## Privacy
 
-All data lives in `localStorage` on your device. Nothing is uploaded, ever. There is no backend
-to upload it to. Export a JSON backup from Settings now and then — clearing browser data
-deletes everything.
+By default everything lives in `localStorage` on the device. Nothing is uploaded.
+
+**Optional sync** copies the data to a **private** GitHub repo using a token you paste in
+Settings. The app refuses to connect to a public repo. The token is stored on the device and
+is only ever sent to `api.github.com`. Turn sync off and the token is removed from the device
+(the data stays in your repo).
+
+Export a JSON backup from Settings now and then — it is the one thing that survives losing
+the device.
+
+## Sync between devices
+
+1. Create a **private** repo, e.g. `anchor-data`.
+2. Create a [fine-grained token](https://github.com/settings/personal-access-tokens/new) scoped
+   to **only that repo**, with **Contents: Read and write**.
+3. In Anchor → Settings → *Sync between devices* → paste owner, repo and token → **Connect**.
+
+How it behaves:
+
+- Pulls on load, then pushes ~1.2s after any local change.
+- **Union merge by record id** — two devices cannot overwrite each other's entries.
+- Deletes leave a tombstone, so a deleted record does not come back from the other device.
+- Reads before every write and retries once on a `409` conflict.
+- If sync fails, the app keeps working locally and says so.
 
 ## Run it locally
 

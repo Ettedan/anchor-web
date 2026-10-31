@@ -54,10 +54,17 @@ export type Settings = {
   onboarded: boolean;
 };
 
+/** Tombstones for deleted records, so a delete survives a sync merge. */
+export type Deleted = Record<string, number>;
+
 export type AppData = {
+  version: 2;
   entries: Entry[];
   notes: Note[];
   settings: Settings;
+  deleted: Deleted;
+  /** bumped on every local change; used to decide which settings win */
+  updatedAt: number;
 };
 
 export const defaultSettings = (): Settings => ({
@@ -68,7 +75,10 @@ export const defaultSettings = (): Settings => ({
 });
 
 export const emptyData = (): AppData => ({
+  version: 2,
   entries: [],
   notes: [],
   settings: defaultSettings(),
+  deleted: {},
+  updatedAt: 0,
 });

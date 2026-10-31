@@ -6,10 +6,28 @@ import { useStore } from '../store';
 import { nowIso } from '../util';
 
 export function SettingsScreen() {
-  const { data, updateSettings, clearAll, exportJson, importJson } = useStore();
+  const {
+    data,
+    updateSettings,
+    clearAll,
+    exportJson,
+    importJson,
+    syncConfig,
+    syncState,
+    syncError,
+    connectSync,
+    disconnectSync,
+    syncNow,
+  } = useStore();
   const [confirming, setConfirming] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [showSetup, setShowSetup] = useState(false);
+  const [owner, setOwner] = useState('Ettedan');
+  const [repo, setRepo] = useState('anchor-data');
+  const [token, setToken] = useState('');
+  const [connecting, setConnecting] = useState(false);
 
   const download = () => {
     const blob = new Blob([exportJson()], { type: 'application/json' });
@@ -34,7 +52,11 @@ export function SettingsScreen() {
   return (
     <div className="screen">
       <h1 className="h1">Settings</h1>
-      <p className="small dim" style={{ marginTop: 4 }}>Everything lives on this device. Nothing is uploaded.</p>
+      <p className="small dim" style={{ marginTop: 4 }}>
+        {syncConfig
+          ? 'Saved on this device, and copied to your private repo while sync is on.'
+          : 'Saved on this device only. Nothing is uploaded while sync is off.'}
+      </p>
 
       <div className="label" style={{ marginTop: 20, marginBottom: 10 }}>Caffeine</div>
       <div className="card col" style={{ gap: 14 }}>
@@ -71,6 +93,132 @@ export function SettingsScreen() {
           A fixed wake time matters more than a fixed bedtime. Getting up at the same time every day,
           with light in your eyes, is the lever that resets the body clock.
         </p>
+      </div>
+
+      <div className="label" style={{ marginTop: 20, marginBottom: 10 }}>Sync between devices</div>
+      <div className="card col" style={{ gap: 12 }}>
+        {syncConfig ? (
+          <>
+            <div className="row">
+              <div className="grow">
+                <p style={{ fontWeight: 600 }}>
+                  {syncState === 'syncing'
+                    ? 'Syncing…'
+                    : syncState === 'error'
+                    ? 'Sync problem'
+                    : 'Synced'}
+                </p>
+                <p className="tiny dim">
+                  {syncConfig.owner}/{syncConfig.repo}
+                  {syncConfig.lastSync
+                    ? ` · last ${new Date(syncConfig.lastSync).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}`
+                    : ''}
+                </p>
+              </div>
+              <span
+                className="entry-dot"
+                style={{
+                  background:
+                    syncState === 'error'
+                      ? 'var(--coral)'
+                      : syncState === 'syncing'
+                      ? 'var(--amber)'
+                      : 'var(--accent)',
+                  width: 10,
+                  height: 10,
+                }}
+              />
+            </div>
+            {syncError ? (
+              <p className="small" style={{ color: 'var(--coral)' }}>{syncError}</p>
+            ) : null}
+            <div className="row" style={{ gap: 8 }}>
+              <div className="grow">
+                <Button label="Sync now" variant="soft" onPress={() => void syncNow()} />
+              </div>
+              <div className="grow">
+                <Button label="Disconnect" variant="ghost" onPress={disconnectSync} />
+              </div>
+            </div>
+            <p className="tiny faint">
+              Your token is stored on this device only. Disconnect removes it here; the data stays in
+              your private repo.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="small dim">
+              Turn on sync to keep the same records on your phone and your computer. Data is written to
+              a private GitHub repo that only your token can read.
+            </p>
+            {!showSetup ? (
+              <Button label="Set up sync" variant="soft" onPress={() => setShowSetup(true)} />
+            ) : (
+              <>
+                <ol className="small dim" style={{ margin: 0, paddingLeft: 18, lineHeight: 1.7 }}>
+                  <li>
+                    Open{' '}
+                    <a
+                      href="https://github.com/settings/personal-access-tokens/new"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      a new fine-grained token
+                    </a>
+                  </li>
+                  <li>Repository access → <b>Only select repositories</b> → <b>{repo}</b></li>
+                  <li>Permissions → <b>Contents: Read and write</b></li>
+                  <li>Generate, copy it, and paste below</li>
+                </ol>
+                <div className="grid2">
+                  <div>
+                    <SectionLabel>Owner</SectionLabel>
+                    <Field value={owner} onChange={setOwner} />
+                  </div>
+                  <div>
+                    <SectionLabel>Private repo</SectionLabel>
+                    <Field value={repo} onChange={setRepo} />
+                  </div>
+                </div>
+                <div>
+                  <SectionLabel>Token</SectionLabel>
+                  <Field value={token} onChange={setToken} placeholder="github_pat_…" />
+                </div>
+                {syncError ? (
+                  <p className="small" style={{ color: 'var(--coral)' }}>{syncError}</p>
+                ) : null}
+                <Button
+                  label={connecting ? 'Connecting…' : 'Connect'}
+                  onPress={async () => {
+                    setConnecting(true);
+                    try {
+                      await connectSync(owner.trim(), repo.trim(), token.trim());
+                      setShowSetup(false);
+                      setToken('');
+                      setMsg('Sync is on.');
+                      setTimeout(() => setMsg(null), 3000);
+                    } catch {
+                      /* error already surfaced via syncError */
+                    } finally {
+                      setConnecting(false);
+                    }
+                  }}
+                  disabled={connecting || !token.trim() || !owner.trim() || !repo.trim()}
+                />
+                <p className="tiny faint">
+                  The token never leaves this device except to talk to GitHub. Use a private repo —
+                  a public one would expose your notes.
+                </p>
+              </>
+            )}
+          </>
+        )}
       </div>
 
       <div className="label" style={{ marginTop: 20, marginBottom: 10 }}>Your data</div>
@@ -144,7 +292,7 @@ export function SettingsScreen() {
       </div>
 
       <p className="tiny faint" style={{ marginTop: 16, textAlign: 'center' }}>
-        Anchor · v1.0 · your data never leaves your device
+        Anchor · v1.1 · local-first, sync optional
       </p>
     </div>
   );

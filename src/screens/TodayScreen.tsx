@@ -30,7 +30,7 @@ export function TodayScreen({
   onOpenTracker: (kind: TrackKind) => void;
   onOpenEpisode: () => void;
 }) {
-  const { data, deleteEntry } = useStore();
+  const { data, deleteEntry, syncConfig, syncState } = useStore();
   const [weather, setWeather] = useState<WeatherSnap | null>(null);
 
   useEffect(() => {
@@ -50,6 +50,11 @@ export function TodayScreen({
     <div className="screen">
       <p className="label" style={{ color: 'var(--accent)' }}>{fmtFull(Date.now())}</p>
       <h1 className="h1" style={{ marginTop: 6 }}>{greeting()}</h1>
+      {syncConfig && syncState === 'error' ? (
+        <p className="tiny" style={{ color: 'var(--coral)', marginTop: 6 }}>
+          Sync is failing — your entries are still saved on this device.
+        </p>
+      ) : null}
 
       {weather ? (
         <div className="card row" style={{ marginTop: 16, gap: 10 }}>
