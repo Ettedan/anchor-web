@@ -5,7 +5,7 @@
      asset filenames that no longer exist.
    - Static assets (hashed filenames): cache-first, they never change.
 */
-const CACHE = 'anchor-web-v2';
+const CACHE = 'anchor-web-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -28,10 +28,13 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  // HTML: always try the network first so deploys take effect.
+  // HTML: always go to the network, bypassing the HTTP cache as well.
+  // GitHub Pages caches HTML for ~10 minutes; without `no-store` a deploy would
+  // keep serving an old index.html that points at asset files that no longer
+  // exist, which shows up as a blank page with a MIME-type error.
   if (req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html')) {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
           const clone = res.clone();
           caches.open(CACHE).then((c) => c.put('./index.html', clone));
